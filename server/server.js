@@ -25,7 +25,7 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: "https://u-xinsightlab.vercel.app",
+  origin: process.env.CLIENT_URL,
   credentials: true
 }));
 app.use(express.json());
