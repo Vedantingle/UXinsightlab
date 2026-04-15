@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+const API = import.meta.env.VITE_API_BASE_URL;
 
 function Home() {
   const [url, setUrl] = useState('');
@@ -16,8 +17,15 @@ function Home() {
     setError(null);
 
     try {
-      const response = await axios.post('https://uxinsightlab.onrender.com/api/analyze', { url });
-      navigate(`/report/${response.data._id}`);
+      const response = await axios.post(`${API}/api/analyze`, { url });
+      console.log("Analyze response:", response.data);
+
+      if (response.data && response.data._id) {
+        navigate(`/report/${response.data._id}`);
+      } else {
+        // fallback for guest users
+        alert("Report generated but not saved. Please login to view full report.");
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to analyze URL. Please check the URL and try again.');
       setLoading(false);
@@ -27,27 +35,27 @@ function Home() {
   return (
     <div className="landing">
       {/* Hero Section */}
-      <section style={{ 
-        padding: '6rem 0', 
-        textAlign: 'center', 
+      <section style={{
+        padding: '6rem 0',
+        textAlign: 'center',
         background: 'var(--bg-card)',
-        borderBottom: '1px solid var(--border)' 
+        borderBottom: '1px solid var(--border)'
       }}>
         <div className="container" style={{ maxWidth: '800px' }}>
           <h1 style={{ fontSize: '3.5rem', marginBottom: '1.5rem', letterSpacing: '-0.025em' }}>
             Perfect Your Website's <span style={{ color: 'var(--primary)' }}>UX Strategy</span>
           </h1>
           <p style={{ fontSize: '1.25rem', color: 'var(--text-muted)', marginBottom: '3rem', lineHeight: '1.6' }}>
-            Automated deep-dive audits for SEO, Accessibility, and User Experience. 
+            Automated deep-dive audits for SEO, Accessibility, and User Experience.
             Get actionable insights to boost convergence and retention.
           </p>
 
-          <form onSubmit={handleAnalyze} style={{ 
-            display: 'flex', 
-            gap: '12px', 
-            background: 'var(--bg-card)', 
-            padding: '8px', 
-            borderRadius: 'var(--radius-lg)', 
+          <form onSubmit={handleAnalyze} style={{
+            display: 'flex',
+            gap: '12px',
+            background: 'var(--bg-card)',
+            padding: '8px',
+            borderRadius: 'var(--radius-lg)',
             boxShadow: 'var(--shadow-lg)',
             border: '1px solid var(--border)',
             maxWidth: '600px',
@@ -59,18 +67,18 @@ function Home() {
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://yourwebsite.com"
               required
-              style={{ 
-                flex: 1, 
-                padding: '1rem', 
-                fontSize: '1.1rem', 
-                border: 'none', 
+              style={{
+                flex: 1,
+                padding: '1rem',
+                fontSize: '1.1rem',
+                border: 'none',
                 outline: 'none',
                 borderRadius: 'var(--radius-md)',
                 backgroundColor: 'transparent',
               }}
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={loading}
               className="btn-primary"
               style={{ padding: '0 2rem', fontSize: '1rem', minWidth: '140px' }}
@@ -85,11 +93,11 @@ function Home() {
           </form>
 
           {error && (
-            <div style={{ 
-              marginTop: '1.5rem', 
-              padding: '1rem', 
-              backgroundColor: '#fee2e2', 
-              color: '#991b1b', 
+            <div style={{
+              marginTop: '1.5rem',
+              padding: '1rem',
+              backgroundColor: '#fee2e2',
+              color: '#991b1b',
               borderRadius: 'var(--radius-md)',
               fontSize: '0.9rem',
               fontWeight: '500'
@@ -108,10 +116,10 @@ function Home() {
             <p style={{ color: 'var(--text-muted)' }}>Professional tools designed for developers and designers.</p>
           </div>
 
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
-            gap: '2.5rem' 
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '2.5rem'
           }}>
             <div className="card" style={{ padding: '2.5rem' }}>
               <div style={{ fontSize: '2rem', marginBottom: '1.5rem' }}>🔍</div>
@@ -136,7 +144,7 @@ function Home() {
       <section style={{ padding: '5rem 0', backgroundColor: 'var(--bg-main)', borderTop: '1px solid var(--border)' }}>
         <div className="container" style={{ maxWidth: '900px' }}>
           <h2 style={{ textAlign: 'center', marginBottom: '4rem', fontSize: '2.25rem' }}>How it Works</h2>
-          
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
             {[
               { step: '01', title: 'Connect your URL', text: 'Enter any public website URL to start our automated crawler.' },
@@ -144,15 +152,15 @@ function Home() {
               { step: '03', title: 'Actionable Plan', text: 'Receive a prioritized list of improvements with deep-dive educational insights.' }
             ].map((item, idx) => (
               <div key={idx} style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
-                <div style={{ 
-                  fontSize: '1.5rem', 
-                  fontWeight: '800', 
-                  color: 'var(--primary)', 
-                  backgroundColor: 'var(--bg-main)', 
-                  width: '60px', 
-                  height: '60px', 
-                  display: 'flex', 
-                  alignItems: 'center', 
+                <div style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '800',
+                  color: 'var(--primary)',
+                  backgroundColor: 'var(--bg-main)',
+                  width: '60px',
+                  height: '60px',
+                  display: 'flex',
+                  alignItems: 'center',
                   justifyContent: 'center',
                   borderRadius: 'var(--radius-md)',
                   flexShrink: 0

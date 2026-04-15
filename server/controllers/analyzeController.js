@@ -10,7 +10,7 @@ const analyzeUrl = async (req, res) => {
 
   try {
     let targetUrl = url.startsWith('http') ? url : `https://${url}`;
-    
+
     // Setup generic user-agent to bypass some basic blocks
     const response = await axios.get(targetUrl, {
       headers: {
@@ -23,7 +23,7 @@ const analyzeUrl = async (req, res) => {
     const $ = cheerio.load(html);
 
     let score = 100;
-    const audits = []; 
+    const audits = [];
     const strengths = [];
     const areasForImprovement = [];
 
@@ -103,10 +103,10 @@ const analyzeUrl = async (req, res) => {
     const images = $('img');
     let imagesWithoutAlt = 0;
     images.each((i, img) => {
-        const alt = $(img).attr('alt');
-        if (typeof alt === 'undefined' || alt.trim() === '') {
-            imagesWithoutAlt++;
-        }
+      const alt = $(img).attr('alt');
+      if (typeof alt === 'undefined' || alt.trim() === '') {
+        imagesWithoutAlt++;
+      }
     });
 
     if (imagesWithoutAlt > 0) {
@@ -176,11 +176,11 @@ const analyzeUrl = async (req, res) => {
     // 9. Links Analysis
     const linkCount = $('a').length;
     if (linkCount > 200) {
-        addAudit(`Very high number of links (${linkCount}).`, 'Consolidate navigation to prevent UI clutter.', -5, "Usability", {
-          why: "Excessive links create 'choice paralysis' and increase cognitive load, making it harder for users to navigate.",
-          how: "Review and remove redundant links or use dropdowns for overflow items.",
-          link: "https://www.nngroup.com/articles/navigation-links/"
-        });
+      addAudit(`Very high number of links (${linkCount}).`, 'Consolidate navigation to prevent UI clutter.', -5, "Usability", {
+        why: "Excessive links create 'choice paralysis' and increase cognitive load, making it harder for users to navigate.",
+        how: "Review and remove redundant links or use dropdowns for overflow items.",
+        link: "https://www.nngroup.com/articles/navigation-links/"
+      });
     }
 
     // 10. Favicon check
@@ -198,51 +198,51 @@ const analyzeUrl = async (req, res) => {
 
     // NEW: Refined Heuristic Scoring Logic
     const calculateHeuristics = (allAudits) => {
-        const mapping = [
-            { title: "Accessibility", category: "Accessibility", rec: "Add alt text and accessible labels to all interactive elements." },
-            { title: "SEO", category: "SEO", rec: "Enhance your metadata and title tags for better search indexing." },
-            { title: "Responsiveness", category: "Mobile Experience", rec: "Configure viewport settings and responsive layouts for small screens." },
-            { title: "Content", category: "Content Structure", rec: "Ensure a logical heading hierarchy with a single primary H1." },
-            { title: "Usability", category: ["Usability", "Technical Quality", "Branding"], rec: "Optimize link density and address technical basics like favicons and encoding." }
-        ];
+      const mapping = [
+        { title: "Accessibility", category: "Accessibility", rec: "Add alt text and accessible labels to all interactive elements." },
+        { title: "SEO", category: "SEO", rec: "Enhance your metadata and title tags for better search indexing." },
+        { title: "Responsiveness", category: "Mobile Experience", rec: "Configure viewport settings and responsive layouts for small screens." },
+        { title: "Content", category: "Content Structure", rec: "Ensure a logical heading hierarchy with a single primary H1." },
+        { title: "Usability", category: ["Usability", "Technical Quality", "Branding"], rec: "Optimize link density and address technical basics like favicons and encoding." }
+      ];
 
-        return mapping.map(m => {
-            const categories = Array.isArray(m.category) ? m.category : [m.category];
-            const catAudits = allAudits.filter(a => categories.includes(a.category));
-            const catImpact = catAudits.reduce((sum, a) => sum + a.scoreImpact, 0);
-            const catScore = Math.max(0, 100 + catImpact);
-            
-            let explanation = "";
-            const catLabel = Array.isArray(m.category) ? "Technical & Usability" : m.category;
-            
-            if (catScore >= 90) {
-                explanation = `The site shows strong ${catLabel} fundamentals with nearly zero detected friction points.`;
-            } else if (catScore >= 70) {
-                explanation = `Good foundation, though we found ${catAudits.length} area(s) needing refinement, specifically regarding ${catAudits[0].issue.toLowerCase()}`;
-            } else {
-                explanation = `Significant ${catLabel} gaps detected. The primary blocker is ${catAudits[0].issue.toLowerCase()}`;
-            }
+      return mapping.map(m => {
+        const categories = Array.isArray(m.category) ? m.category : [m.category];
+        const catAudits = allAudits.filter(a => categories.includes(a.category));
+        const catImpact = catAudits.reduce((sum, a) => sum + a.scoreImpact, 0);
+        const catScore = Math.max(0, 100 + catImpact);
 
-            return {
-                title: m.title,
-                score: catScore,
-                explanation,
-                recommendation: catAudits.length > 0 ? catAudits[0].suggestion : "Continue following established web standards for this category."
-            };
-        });
+        let explanation = "";
+        const catLabel = Array.isArray(m.category) ? "Technical & Usability" : m.category;
+
+        if (catScore >= 90) {
+          explanation = `The site shows strong ${catLabel} fundamentals with nearly zero detected friction points.`;
+        } else if (catScore >= 70) {
+          explanation = `Good foundation, though we found ${catAudits.length} area(s) needing refinement, specifically regarding ${catAudits[0].issue.toLowerCase()}`;
+        } else {
+          explanation = `Significant ${catLabel} gaps detected. The primary blocker is ${catAudits[0].issue.toLowerCase()}`;
+        }
+
+        return {
+          title: m.title,
+          score: catScore,
+          explanation,
+          recommendation: catAudits.length > 0 ? catAudits[0].suggestion : "Continue following established web standards for this category."
+        };
+      });
     };
 
     const heuristics = calculateHeuristics(audits);
 
     // Calculate Category Scores
     const categoryScores = {
-        seo: heuristics.find(h => h.title === "SEO")?.score || 100,
-        accessibility: heuristics.find(h => h.title === "Accessibility")?.score || 100,
-        ux: Math.round(
-            (heuristics.find(h => h.title === "Responsiveness")?.score +
-             heuristics.find(h => h.title === "Content")?.score +
-             heuristics.find(h => h.title === "Usability")?.score) / 3
-        )
+      seo: heuristics.find(h => h.title === "SEO")?.score || 100,
+      accessibility: heuristics.find(h => h.title === "Accessibility")?.score || 100,
+      ux: Math.round(
+        (heuristics.find(h => h.title === "Responsiveness")?.score +
+          heuristics.find(h => h.title === "Content")?.score +
+          heuristics.find(h => h.title === "Usability")?.score) / 3
+      )
     };
 
     // Generate Summary
@@ -255,7 +255,7 @@ const analyzeUrl = async (req, res) => {
 
       const crit = aud.filter(a => a.scoreImpact <= -10).length;
       let sum = `The automated scan indicates a ${grade} UX foundation with a score of ${s}/100. `;
-      
+
       if (crit > 0) {
         sum += `We found ${crit} critical issues in ${areasForImprovement.join(' & ')} that significantly impact the user experience. `;
       } else if (s < 95) {
@@ -281,13 +281,12 @@ const analyzeUrl = async (req, res) => {
 
     // Only save report if user is logged in
     let reportResponse;
-    if (req.user) {
-      reportData.userId = req.user._id;
-      reportResponse = await Report.create(reportData);
-    } else {
-      // For guests, we return the data without saving to DB
-      reportResponse = reportData;
-    }
+    const report = await Report.create({
+      ...reportData,
+      userId: req.user ? req.user._id : null
+    });
+
+    res.status(200).json(report);
 
     res.status(200).json(reportResponse);
 
@@ -301,6 +300,10 @@ const analyzeUrl = async (req, res) => {
 const getReports = async (req, res) => {
   try {
     // Only fetch reports belonging to the current user
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const reports = await Report.find({ userId: req.user._id }).sort({ createdAt: -1 }).limit(50);
     res.json(reports);
   } catch (error) {
@@ -312,12 +315,12 @@ const getReportById = async (req, res) => {
   try {
     const report = await Report.findById(req.params.id);
     if (!report) {
-       return res.status(404).json({ message: 'Report not found' });
+      return res.status(404).json({ message: 'Report not found' });
     }
-    
+
     // Ensure report belongs to current user
     if (report.userId && report.userId.toString() !== req.user._id.toString()) {
-        return res.status(403).json({ message: 'Not authorized to view this report' });
+      return res.status(403).json({ message: 'Not authorized to view this report' });
     }
 
     res.json(report);
