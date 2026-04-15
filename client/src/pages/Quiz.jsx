@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+const API = import.meta.env.VITE_API_BASE_URL;
 
 const EDUCATIONAL_CONTENT = {
   'UX': {
@@ -87,7 +88,7 @@ function Quiz() {
     const fetchLastResult = async () => {
       if (user) {
         try {
-          const res = await axios.get('https://uxinsightlab.onrender.com/api/users/profile');
+          const res = await axios.get(`${API}/api/users/profile`);
           if (res.data.user.lastQuizResult) {
             setLastQuizResult(res.data.user.lastQuizResult);
             return;
@@ -109,7 +110,7 @@ function Quiz() {
     setError(null);
     try {
       const { category, difficulty } = filters;
-      const res = await axios.get(`https://uxinsightlab.onrender.com/api/quiz?category=${category}&difficulty=${difficulty}`);
+      const res = await axios.get(`${API}/api/quiz?category=${category}&difficulty=${difficulty}`);
       setQuestions(res.data);
       setCurrentIndex(0);
       setScore(0);
@@ -128,7 +129,7 @@ function Quiz() {
     setUserAnswer(index);
     const currentQ = questions[currentIndex];
     try {
-      const res = await axios.post('https://uxinsightlab.onrender.com/api/quiz/check', {
+      const res = await axios.post(`${API}/api/quiz/check`, {
         questionId: currentQ._id,
         answerIndex: index
       });
@@ -162,7 +163,7 @@ function Quiz() {
     const percentage = Math.round((score / maxPossibleScore) * 100);
     const result = { score: percentage, category: filters.category, difficulty: filters.difficulty, date: new Date() };
     if (user) {
-      try { await axios.post('https://uxinsightlab.onrender.com/api/users/quiz-result', result); }
+      try { await axios.post(`${API}/api/users/quiz-result`, result); }
       catch (err) { console.error('Failed to save quiz result to profile'); }
     } else {
       localStorage.setItem('lastQuizResult', JSON.stringify({ ...result, date: new Date().toLocaleDateString() }));
@@ -306,7 +307,23 @@ function Quiz() {
 
   // ─── STEP 3: QUIZ ─────────────────────────────────────────────────────
   if (step === 'QUIZ') {
-    const q = questions[currentIndex];
+    if (!questions || questions.length === 0) {
+  return (
+    <div className="container" style={{ padding: '4rem' }}>
+      <div className="card" style={{ padding: '2rem', textAlign: 'center' }}>
+        <h3>No questions available</h3>
+        <p style={{ color: 'var(--text-muted)' }}>
+          Try changing category or difficulty.
+        </p>
+        <button onClick={() => setStep('SELECT')} className="btn-primary">
+          Go Back
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const q = questions[currentIndex];
     const progress = ((currentIndex + 1) / questions.length) * 100;
 
     return (

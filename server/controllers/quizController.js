@@ -37,7 +37,7 @@ const checkAnswer = async (req, res) => {
   try {
     const question = await Question.findById(questionId);
     if (!question) {
-        return res.status(404).json({ message: "Question not found" });
+        return res.json([]);
     }
 
     const isCorrect = question.correctOptionIndex === Number(answerIndex);
