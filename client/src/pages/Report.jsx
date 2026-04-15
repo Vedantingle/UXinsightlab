@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
+const API = import.meta.env.VITE_API_BASE_URL;
 
 function Report() {
   const { id } = useParams();
@@ -12,7 +13,11 @@ function Report() {
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const response = await axios.get(`https://uxinsightlab.onrender.com/api/analyze/${id}`);
+        const response = await axios.get(`${API}/api/analyze/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        });
         setResult(response.data);
       } catch (err) {
         setError('Failed to fetch the report or it does not exist.');
@@ -41,7 +46,7 @@ function Report() {
       }
     `;
     document.head.appendChild(style);
-    
+
     // Small delay so React re-renders expanded audits before print dialog opens
     setTimeout(() => {
       window.print();
