@@ -200,7 +200,7 @@ const analyzeUrl = async (req, res) => {
     const calculateHeuristics = (allAudits) => {
       const mapping = [
         { title: "Accessibility", category: "Accessibility", rec: "Add alt text and accessible labels to all interactive elements." },
-        { title: "SEO", category: "SEO", rec: "Enhance your metadata and title tags for better search indexing." },
+        { title: "SEO", categories: ["SEO", "Accessibility", "Content"], rec: "Enhance your metadata and title tags for better search indexing." },
         { title: "Responsiveness", category: "Mobile Experience", rec: "Configure viewport settings and responsive layouts for small screens." },
         { title: "Content", category: "Content Structure", rec: "Ensure a logical heading hierarchy with a single primary H1." },
         { title: "Usability", category: ["Usability", "Technical Quality", "Branding"], rec: "Optimize link density and address technical basics like favicons and encoding." }
@@ -227,7 +227,7 @@ const analyzeUrl = async (req, res) => {
           title: m.title,
           score: catScore,
           explanation,
-          recommendation: catAudits.length > 0 ? catAudits[0].suggestion : "Continue following established web standards for this category."
+          recommendation: catAudits.length > 0 ? catAudits[0].suggestion : "Your page uses proper viewport settings and responsive layout. Maintain consistency across all components, especially interactive elements like buttons and forms."
         };
       });
     };
