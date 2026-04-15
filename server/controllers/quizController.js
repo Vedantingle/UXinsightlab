@@ -8,10 +8,18 @@ const getQuestions = async (req, res) => {
     if (difficulty && difficulty !== 'All') filter.difficulty = difficulty;
 
     // Fetch up to 5 random questions matching the filter
-    const questions = await Question.aggregate([
-      { $match: filter },
-      { $sample: { size: 5 } }
-    ]);
+    let questions;
+
+if (Object.keys(filter).length > 0) {
+  questions = await Question.aggregate([
+    { $match: filter },
+    { $sample: { size: 5 } }
+  ]);
+} else {
+  questions = await Question.aggregate([
+    { $sample: { size: 5 } }
+  ]);
+}
     
     if (questions.length === 0) {
       return res.status(200).json([]);
