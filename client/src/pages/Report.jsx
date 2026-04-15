@@ -12,7 +12,7 @@ function Report() {
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/analyze/${id}`);
+        const response = await axios.get(`https://uxinsightlab.onrender.com/api/analyze/${id}`);
         setResult(response.data);
       } catch (err) {
         setError('Failed to fetch the report or it does not exist.');

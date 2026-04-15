@@ -10,7 +10,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/analyze');
+        const response = await axios.get('https://uxinsightlab.onrender.com/api/analyze');
         setReports(response.data);
       } catch (err) {
         setError('Failed to fetch report history from the database.');

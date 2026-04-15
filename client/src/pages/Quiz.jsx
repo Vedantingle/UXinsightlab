@@ -87,7 +87,7 @@ function Quiz() {
     const fetchLastResult = async () => {
       if (user) {
         try {
-          const res = await axios.get('http://localhost:5000/api/users/profile');
+          const res = await axios.get('https://uxinsightlab.onrender.com/api/users/profile');
           if (res.data.user.lastQuizResult) {
             setLastQuizResult(res.data.user.lastQuizResult);
             return;
@@ -109,7 +109,7 @@ function Quiz() {
     setError(null);
     try {
       const { category, difficulty } = filters;
-      const res = await axios.get(`http://localhost:5000/api/quiz?category=${category}&difficulty=${difficulty}`);
+      const res = await axios.get(`https://uxinsightlab.onrender.com/api/quiz?category=${category}&difficulty=${difficulty}`);
       setQuestions(res.data);
       setCurrentIndex(0);
       setScore(0);
@@ -128,7 +128,7 @@ function Quiz() {
     setUserAnswer(index);
     const currentQ = questions[currentIndex];
     try {
-      const res = await axios.post('http://localhost:5000/api/quiz/check', {
+      const res = await axios.post('https://uxinsightlab.onrender.com/api/quiz/check', {
         questionId: currentQ._id,
         answerIndex: index
       });
@@ -162,7 +162,7 @@ function Quiz() {
     const percentage = Math.round((score / maxPossibleScore) * 100);
     const result = { score: percentage, category: filters.category, difficulty: filters.difficulty, date: new Date() };
     if (user) {
-      try { await axios.post('http://localhost:5000/api/users/quiz-result', result); }
+      try { await axios.post('https://uxinsightlab.onrender.com/api/users/quiz-result', result); }
       catch (err) { console.error('Failed to save quiz result to profile'); }
     } else {
       localStorage.setItem('lastQuizResult', JSON.stringify({ ...result, date: new Date().toLocaleDateString() }));

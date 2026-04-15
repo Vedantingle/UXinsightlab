@@ -24,7 +24,10 @@ if (!process.env.JWT_SECRET) {
 connectDB();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "https://u-xinsightlab.vercel.app/",
+  credentials: true
+}));
 app.use(express.json());
 
 // Main Routes

@@ -21,8 +21,8 @@ function Profile() {
     const fetchData = async () => {
       try {
         const [profileRes, reportsRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/users/profile'),
-          axios.get('http://localhost:5000/api/analyze')
+          axios.get('https://uxinsightlab.onrender.com/api/users/profile'),
+          axios.get('https://uxinsightlab.onrender.com/api/analyze')
         ]);
         setStats(profileRes.data);
         setRecentReports(reportsRes.data.slice(0, 3)); // Last 3 scans

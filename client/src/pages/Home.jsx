@@ -16,7 +16,7 @@ function Home() {
     setError(null);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/analyze', { url });
+      const response = await axios.post('https://uxinsightlab.onrender.com/api/analyze', { url });
       navigate(`/report/${response.data._id}`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to analyze URL. Please check the URL and try again.');
