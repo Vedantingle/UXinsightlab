@@ -14,7 +14,7 @@ const getQuestions = async (req, res) => {
     ]);
     
     if (questions.length === 0) {
-      return res.status(404).json({ message: 'No questions found for this selection. Try different filters.' });
+      return res.status(200).json([]);
     }
 
     // Don't send correct answers, but include metadata for scoring
